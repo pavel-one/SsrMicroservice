@@ -31,7 +31,6 @@ fi
 echo -en "${INPUT} Название приложения: ";
 read APP_NAME;
 echo -e "APP_NAME=\"${APP_NAME}\"" >> .env
-echo -e "APP_KEY=" >> .env
 
 echo -en "${INPUT} Локальный или прод? [l/p]: ";
 read ENV_INPUT;
@@ -46,14 +45,8 @@ else
 	echo -e "APP_DEBUG=true" >> .env
 fi
 
-echo -en "${INPUT} Адрес сайта без http's: ";
-read APP_BASE_URL;
-echo -e "APP_BASE_URL=${APP_BASE_URL}" >> .env
-
 echo -e "\n" >> .env;
-echo -e "DB_CONNECTION=mysql" >> .env
 echo -e "DB_HOST=db" >> .env
-echo -e "DB_PORT=3306" >> .env
 
 echo -en "${INPUT} Название бд: ";
 read DB_DATABASE;
