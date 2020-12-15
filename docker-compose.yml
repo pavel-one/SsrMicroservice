@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  app:
+    build:
+      args:
+        user: ${DOCKER_USER}
+        uid: ${DOCKER_UID}
+      context: .
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/home/node/app
+    command: bash -c "npm install && npm run watch"
