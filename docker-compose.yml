@@ -9,7 +9,33 @@ services:
       context: .
       dockerfile: ./docker/Dockerfile
     ports:
-      - "3000:3000"
+      - ${SERVER_PORT}:${SERVER_PORT}
     volumes:
       - .:/home/node/app
-    command: bash -c "npm install && npm run watch"
+    depends_on:
+      - db
+    command: bash -c "npm install && npm run start"
+
+  db:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: ssr
+    volumes:
+      - ./docker/db/init.js:/docker-entrypoint-initdb.d/init.js
+  mongo-express:
+    image: mongo-express
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 5001:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: db
+      ME_CONFIG_MONGODB_AUTH_DATABASE: ssr
+      ME_CONFIG_MONGODB_AUTH_USERNAME: ssr
+      ME_CONFIG_MONGODB_AUTH_PASSWORD: ssr
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "false"

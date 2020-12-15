@@ -28,9 +28,6 @@ if [[ ${continue} != "y" ]]; then
 	exit 1;
 fi
 
-echo -en "${INPUT} Название приложения: ";
-read APP_NAME;
-echo -e "APP_NAME=\"${APP_NAME}\"" >> .env
 
 echo -en "${INPUT} Локальный или прод? [l/p]: ";
 read ENV_INPUT;
@@ -47,18 +44,6 @@ fi
 
 echo -e "\n" >> .env;
 echo -e "DB_HOST=db" >> .env
-
-echo -en "${INPUT} Название бд: ";
-read DB_DATABASE;
-echo -e "DB_DATABASE=${DB_DATABASE}" >> .env
-
-echo -en "${INPUT} Пользователь бд: ";
-read DB_USERNAME;
-echo -e "DB_USERNAME=${DB_USERNAME}" >> .env
-
-echo -en "${INPUT} Пароль бд: ";
-read DB_PASSWORD;
-echo -e "DB_PASSWORD=${DB_PASSWORD}" >> .env
 
 # Все по умолчанию
 for file in `find ${ENV_DIR} -type f -name "*.default.env"`
