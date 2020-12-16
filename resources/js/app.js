@@ -1,1 +1,1 @@
-console.log('test1123');
+console.log('app init');
