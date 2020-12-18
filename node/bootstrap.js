@@ -8,7 +8,6 @@ const mongoose = require('mongoose')
 const path = require('path')
 const server = express();
 
-server.use(express.static(path.resolve('public'))) //Обработка статических файлов
 server.use('/api', require('./routes/api')) //API роуты
 server.use('/', require('./routes/site')) //Роуты обычных страниц сайта
 

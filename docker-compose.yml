@@ -8,16 +8,25 @@ services:
         uid: ${DOCKER_UID}
       context: .
       dockerfile: ./docker/Dockerfile
-    ports:
-      - ${SERVER_PORT}:${SERVER_PORT}
     volumes:
       - .:/home/node/app
     depends_on:
       - db
+      - nginx
     command: bash -c "npm install && npm run start"
 
+  nginx:
+    image: nginx:stable-alpine
+    environment:
+      - SERVER_PORT=${SERVER_PORT}
+    ports:
+      - 80:80
+    volumes:
+      - ./public:/usr/share/nginx/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+
   db:
-    image: mongo
+    image: mongo:latest
     ports:
       - 27017:27017
     environment:
@@ -32,7 +41,7 @@ services:
     depends_on:
       - db
     ports:
-      - 5001:8081
+      - 8081:8081
     environment:
       ME_CONFIG_MONGODB_SERVER: db
       ME_CONFIG_MONGODB_AUTH_DATABASE: ssr
