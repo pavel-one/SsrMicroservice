@@ -39,6 +39,29 @@ export default {
     },
     methods: {
         submit: function () {
+            this.$http.post('/api/auth', this.form)
+                .then(response => {
+                    this.$buefy.notification.open({
+                        message: response.data.msg,
+                        type: response.data.success ? 'is-success' : 'is-danger'
+                    })
+                })
+                .catch(error => {
+                    console.log()
+                    this.$buefy.dialog.confirm({
+                        message: error.response.data.msg,
+                        onConfirm: this.register
+                    })
+                })
+        },
+        register: function () {
+            this.$http.post('/api/register', this.form)
+                .then(response => {
+                    this.$buefy.notification.open({
+                        message: response.data.msg,
+                        type: response.data.success ? 'is-success' : 'is-danger'
+                    })
+                })
         }
     }
 }
