@@ -12,11 +12,12 @@ services:
       - .:/home/node/app
     depends_on:
       - db
-      - nginx
     command: bash -c "npm install && npm run start"
 
   nginx:
     image: nginx:stable-alpine
+    depends_on:
+      - app
     environment:
       - SERVER_PORT=${SERVER_PORT}
     ports:
