@@ -4,6 +4,24 @@ const Bcrypt = require('bcrypt')
 
 app.router.post('/auth', auth)
 app.router.post('/register', register)
+app.router.get('/props', props)
+
+async function props(req, res) {
+    const user = {}
+
+    if (req.user) {
+        user.id = req.user.id || null
+        user.name = req.user.name || null
+        user.email = req.user.email || null
+        user.phone = req.user.phone || null
+    }
+
+    const data = {
+        user: user
+    }
+
+    return res.success('Успешно', data)
+}
 
 async function register(req, res) {
     if (!req.body.email || !req.body.password) {
@@ -42,6 +60,8 @@ async function auth(req, res, next) {
     if (req.isAuthenticated()) {
         return res.fail('Вы уже авторизованы')
     }
+
+
 
     if (!req.body.email || !req.body.password) {
         return res.fail('Не передан email или пароль', {query: req.body}, 200);

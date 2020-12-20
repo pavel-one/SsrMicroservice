@@ -6,43 +6,39 @@ import VueRouter from 'vue-router'
 import App from './Components/Templates/App'
 
 import pagesRoutes from '../routes/pages'
-import Store from './store/Store'
-import axios from 'axios'
+import Store from './Store/Store'
+import http from './Services/http'
+import router from './Services/router'
 
-Vue.use(VueRouter)
-Vue.use(Buefy)
+async function initApp() {
+    Vue.use(VueRouter)
+    Vue.use(Buefy)
+    Vue.use(http, {
+        limit: 2000
+    })
 
-Vue.prototype.$http = axios
+    const router = new VueRouter({
+        routes: pagesRoutes,
+        mode: 'history',
+        history: true,
+        saveScrollPosition: true
+    })
 
-//Функция тротлинга
-Vue.prototype.$wait = function (callback, limit) {
-    let wait = false;
+    new Vue({
+        render: h => h(App),
+        el: '#app',
+        data() {
+            return Store.states
+        },
+        methods: Store.methods,
+        async created() {
+            // this.syncState();
+            // console.log(await this.$getUser())
+        },
+        router
+    })
 
-    return function () {
-        if (!wait) {
-            callback.call();
-            wait = true;
-            setTimeout(function () {
-                wait = false;
-            }, limit);
-        }
-    }
+    console.log('init')
 }
-const router = new VueRouter({
-    routes: pagesRoutes,
-    mode: 'history',
-    history: true,
-    saveScrollPosition: true
-})
 
-new Vue({
-    render: h => h(App),
-    el: '#app',
-    data() {
-        return Store.state
-    },
-    methods: Store.methods,
-    router
-})
-
-console.log('init')
+initApp()

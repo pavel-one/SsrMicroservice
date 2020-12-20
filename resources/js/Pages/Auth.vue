@@ -23,6 +23,7 @@
 
 <script>
 import layout from './../Components/Templates/Layout'
+import axios from "axios";
 
 export default {
     components: {
@@ -36,6 +37,15 @@ export default {
                 password: ''
             }
         }
+    },
+    async beforeRouteEnter(to, from, next) {
+        const user = await axios.get('/api/props')
+
+        if (user.data.data.user.id) {
+            next({name: 'dashboard'})
+        }
+
+        next()
     },
     methods: {
         submit: function () {

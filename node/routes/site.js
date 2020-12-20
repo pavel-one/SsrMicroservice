@@ -1,10 +1,14 @@
 const app = require('../app.class')
 
-app.router.get('/ping', (req, res) => {
+app.router.get('ping', (req, res) => {
     app.success(res, 'pong')
 })
 
-app.router.get('/dashboard', (req, res) => {
+app.router.get('dashboard', (req, res) => {
+    res.sendFile(app.getPath('public/index.html'))
+})
+
+app.router.get('auth', (req, res) => {
     res.sendFile(app.getPath('public/index.html'))
 })
 

@@ -5,7 +5,12 @@ export default [
     {
         path: '/',
         name: 'index',
-        component: Auth
+        component: Auth,
+    },
+    {
+        path: '/auth',
+        name: 'auth',
+        component: Auth,
     },
     {
         path: '/dashboard',
