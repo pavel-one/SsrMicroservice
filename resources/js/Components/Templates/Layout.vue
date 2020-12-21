@@ -7,9 +7,14 @@
                 </div>
             </div>
         </section>
-        <div class="container">
+        <div :style="css" class="container">
             <slot></slot>
         </div>
     </div>
 </template>
 
+<script>
+export default {
+    props: ['css']
+}
+</script>

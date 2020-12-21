@@ -1,11 +1,75 @@
 const app = require('../app.class')
 const User = require('../models/User')
+const Site = require('../models/Site')
 const Bcrypt = require('bcrypt')
 
 app.router.post('/auth', auth)
 app.router.post('/register', register)
 app.router.get('/props', props)
 app.router.get('/user', user)
+
+app.router.put('/sites', addSite)
+app.router.delete('/sites/:id', removeSite)
+app.router.get('/sites', getSite)
+
+async function removeSite(req, res) {
+    const id = req.params.id
+    const user_id = req.user.id
+
+    if (!id) {
+        return res.fail('Не передан id')
+    }
+
+    const siteObj = await Site.findOne({
+        _id: id,
+        user_id: user_id
+    })
+
+    if (!siteObj) {
+        return res.fail('Не найден такой объект')
+    }
+
+    await siteObj.remove()
+
+    return res.success('Успешно')
+}
+
+async function getSite(req, res) {
+    const sites = await Site.find().exec()
+
+    res.success('Успешно', sites)
+}
+
+async function addSite(req, res) {
+    if (!req.body.name || !req.body.url) {
+        return res.fail('Не передано название или адрес сайта')
+    }
+
+    const SiteObj = await Site.findOne({
+        url: req.body.url
+    })
+
+    if (SiteObj) {
+        return res.fail('Такой сайт уже добавлен в нашей системе, обратитесь к администратору этого сайта')
+    }
+
+    const newSite = new Site({
+        user_id: req.user.id,
+        name: req.body.name,
+        url: req.body.url,
+        created_at: new Date,
+        updated_at: new Date
+    })
+
+    newSite.save()
+        .then(r => {
+            return res.success('Успешно', newSite, 201)
+        })
+        .catch(r => {
+            console.log(r.message)
+            return res.fail('Ошибка создания, обратитесь к администратору')
+        })
+}
 
 async function user(req, res) {
     const user = {
@@ -54,7 +118,7 @@ async function register(req, res) {
     })
 
     newUser.save().then(r => {
-        return res.success('Регистрация прошла успешно')
+        return res.success('Регистрация прошла успешно', [], 201)
     }).catch(error => {
         console.log(error)
         return res.fail('Ошибка сохранения пользователя, пожалуйста, попробуйте позже или с другими данными')
@@ -67,7 +131,6 @@ async function auth(req, res, next) {
     if (req.isAuthenticated()) {
         return res.fail('Вы уже авторизованы')
     }
-
 
 
     if (!req.body.email || !req.body.password) {

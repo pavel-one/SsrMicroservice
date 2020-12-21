@@ -1,8 +1,8 @@
 <template>
-    <layout>
-        <template v-slot:hero>
-            <h1 class="title">Необходима аутентификация</h1>
-            <h2 class="subtitle">Войдите или зарегистрируйтесь</h2>
+    <layout :css="container_style">
+        <template v-slot:hero >
+            <h1 class="title has-text-centered">Необходима аутентификация</h1>
+            <h2 class="subtitle has-text-centered">Войдите или зарегистрируйтесь</h2>
         </template>
         <div class="auth-page">
             <form @submit.prevent="submit">
@@ -12,7 +12,7 @@
                 <b-field label="Пароль">
                     <b-input type="password" v-model="form.password" password-reveal></b-input>
                 </b-field>
-                <b-button native-type="submit" type="is-primary is-light" class="has-text-centered">
+                <b-button :style="{margin: 'auto', display: 'block'}" native-type="submit" type="is-primary is-light" class="has-text-centered">
                     Войти или
                     Зарегистрироваться
                 </b-button>
@@ -45,6 +45,10 @@ export default {
             form: {
                 email: '',
                 password: ''
+            },
+            container_style: {
+                margin: 'auto',
+                maxWidth: '450px !important'
             }
         }
     },
@@ -83,20 +87,3 @@ export default {
     }
 }
 </script>
-
-<style lang="scss">
-.hero-body {
-    margin: auto;
-    text-align: center;
-}
-
-.button {
-    margin: auto;
-    display: block;
-}
-
-.container {
-    margin: auto;
-    max-width: 450px !important;
-}
-</style>
