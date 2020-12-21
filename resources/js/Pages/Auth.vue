@@ -5,7 +5,6 @@
             <h2 class="subtitle">Войдите или зарегистрируйтесь</h2>
         </template>
         <div class="auth-page">
-            USER: {{user}}
             <form @submit.prevent="submit">
                 <b-field label="Email">
                     <b-input type="email" maxlength="30" v-model="form.email"></b-input>
@@ -27,10 +26,15 @@ import layout from './../Components/Templates/Layout'
 import Store from "../Store/Store";
 
 export default {
+    props: ['title'],
     components: {
         layout
     },
-    props: {},
+    metaInfo() {
+        return {
+            title: this.title,
+        }
+    },
     computed: {
         user() {
             return this.$store.getters.getUser
@@ -52,6 +56,13 @@ export default {
                         message: response.data.msg,
                         type: response.data.success ? 'is-success' : 'is-danger'
                     })
+
+                    if (response.data.success) {
+                        this.$store.dispatch('fetchUser').then(res => {
+                            this.$router.push({name: 'dashboard'})
+                        })
+
+                    }
                 })
                 .catch(error => {
                     this.$buefy.dialog.confirm({

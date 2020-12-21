@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import VueMeta from 'vue-meta'
 import Buefy from "buefy";
 import 'buefy/dist/buefy.min.css'
 import VueRouter from 'vue-router'
@@ -12,6 +13,9 @@ import http from './Services/http'
 async function initApp() {
     Vue.use(VueRouter)
     Vue.use(Buefy)
+    Vue.use(VueMeta, {
+        refreshOnceOnNavigation: true
+    })
     Vue.use(http, {
         limit: 2000
     })

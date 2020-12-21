@@ -6,6 +6,10 @@ export default [
         path: '/',
         name: 'index',
         component: Auth,
+        props: {
+            title: 'Авторизация'
+        }
+
     },
     {
         path: '/auth',
@@ -13,6 +17,9 @@ export default [
         component: Auth,
         meta: {
             exceptAuth: true
+        },
+        props: {
+            title: 'Авторизация'
         }
     },
     {
@@ -21,6 +28,9 @@ export default [
         component: Dashboard,
         meta: {
             requiresAuth: true
+        },
+        props: {
+            title: 'Личный кабинет'
         }
     }
 ]

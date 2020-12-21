@@ -12,6 +12,12 @@ App.router.get('/auth', (req, res) => {
     res.sendFile(App.getPath('public/index.html'))
 })
 
+App.router.post('/logout', (req, res) => {
+    req.logout()
+    res.success('Успешно')
+
+})
+
 
 
 module.exports = App.router

@@ -1,21 +1,40 @@
 <template>
-    <div>
-        Dashboard page
-    </div>
+    <Layout>
+        <a href="#" @click.prevent="logout">Выйти</a>
+    </Layout>
 </template>
 
 <script>
-import axios from "axios";
+import Layout from "../Components/Templates/Layout";
 
 export default {
-    async beforeRouteEnter(to, from, next) {
-        // const response = await axios.get('/api/props')
-        //
-        // if (!response.data.data.user.id) {
-        //     next({name: 'auth'})
-        // }
+    components: {Layout},
+    props: ['title'],
+    metaInfo() {
+        return {
+            title: this.title,
+        }
+    },
+    methods: {
+        logout: function () {
+            this.$http.post('/logout').then(response => {
+                this.$buefy.notification.open({
+                    message: response.data.msg,
+                    type: response.data.success ? 'is-success' : 'is-danger'
+                })
 
-        next()
-    }
+                if (response.data.success) {
+                    this.$store.dispatch('fetchUser')
+                        .then(res => {
+                            this.$router.push({name: 'auth'})
+                        })
+                }
+            })
+        }
+    },
 }
 </script>
+
+<style scoped>
+
+</style>
