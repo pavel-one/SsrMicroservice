@@ -8,7 +8,6 @@ import App from './Components/Templates/App'
 import pagesRoutes from '../routes/pages'
 import Store from './Store/Store'
 import http from './Services/http'
-import router from './Services/router'
 
 async function initApp() {
     Vue.use(VueRouter)
@@ -24,16 +23,37 @@ async function initApp() {
         saveScrollPosition: true
     })
 
+    // router.beforeEach((to, from, next) => {
+    //     const user = JSON.parse(localStorage.getItem('user'))
+    //
+    //     console.log('one')
+    //     if (to.matched.some(record => record.meta.exceptAuth) && user.id !== null) {
+    //         Store.commit("setGlobalError", "Вы уже авторизованы")
+    //         next({name: 'dashboard'})
+    //     } else {
+    //         next()
+    //     }
+    // })
+
+    router.beforeEach((to, from, next) => {
+        const user = JSON.parse(localStorage.getItem('user'))
+
+        console.log('two')
+        if (to.matched.some(record => record.meta.requiresAuth) && user.id === null) {
+            Store.commit("setGlobalError", "Необходима авторизация")
+            next({name: 'auth'})
+        } else {
+            next()
+        }
+    })
+
     new Vue({
         render: h => h(App),
         el: '#app',
-        data() {
-            return Store.states
-        },
+        store: Store,
         methods: Store.methods,
-        async created() {
-            // this.syncState();
-            // console.log(await this.$getUser())
+        mounted() {
+            this.$store.dispatch('fetchUser')
         },
         router
     })

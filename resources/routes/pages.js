@@ -11,10 +11,16 @@ export default [
         path: '/auth',
         name: 'auth',
         component: Auth,
+        meta: {
+            exceptAuth: true
+        }
     },
     {
         path: '/dashboard',
         name: 'dashboard',
-        component: Dashboard
+        component: Dashboard,
+        meta: {
+            requiresAuth: true
+        }
     }
 ]

@@ -5,6 +5,7 @@
             <h2 class="subtitle">Войдите или зарегистрируйтесь</h2>
         </template>
         <div class="auth-page">
+            USER: {{user}}
             <form @submit.prevent="submit">
                 <b-field label="Email">
                     <b-input type="email" maxlength="30" v-model="form.email"></b-input>
@@ -23,13 +24,18 @@
 
 <script>
 import layout from './../Components/Templates/Layout'
-import axios from "axios";
+import Store from "../Store/Store";
 
 export default {
     components: {
         layout
     },
     props: {},
+    computed: {
+        user() {
+            return this.$store.getters.getUser
+        }
+    },
     data() {
         return {
             form: {
@@ -37,15 +43,6 @@ export default {
                 password: ''
             }
         }
-    },
-    async beforeRouteEnter(to, from, next) {
-        const user = await axios.get('/api/props')
-
-        if (user.data.data.user.id) {
-            next({name: 'dashboard'})
-        }
-
-        next()
     },
     methods: {
         submit: function () {
@@ -57,7 +54,6 @@ export default {
                     })
                 })
                 .catch(error => {
-                    console.log()
                     this.$buefy.dialog.confirm({
                         message: error.response.data.msg,
                         onConfirm: this.register

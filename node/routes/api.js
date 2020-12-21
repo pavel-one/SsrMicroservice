@@ -5,9 +5,15 @@ const Bcrypt = require('bcrypt')
 app.router.post('/auth', auth)
 app.router.post('/register', register)
 app.router.get('/props', props)
+app.router.get('/user', user)
 
-async function props(req, res) {
-    const user = {}
+async function user(req, res) {
+    const user = {
+        id: null,
+        name: null,
+        email: null,
+        phone: null
+    }
 
     if (req.user) {
         user.id = req.user.id || null
@@ -16,11 +22,12 @@ async function props(req, res) {
         user.phone = req.user.phone || null
     }
 
-    const data = {
-        user: user
-    }
+    return res.success('Успешно', user)
+}
 
-    return res.success('Успешно', data)
+async function props(req, res) {
+
+    return res.success('Успешно', [])
 }
 
 async function register(req, res) {

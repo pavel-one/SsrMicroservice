@@ -1,16 +1,17 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+import UserStore from "./modules/UserStore";
 
-export default {
-    states: {
-        // user: this.serverUser
+Vue.use(Vuex)
+
+export default new Vuex.Store({
+    actions: {},
+    mutations: {},
+    state: {
+
     },
-    methods: {
-        syncState: function () {
-            this.getStates().then(res => {
-                this.states = res.data.data
-            })
-        },
-        getStates: function () {
-            return this.$http.get('/api/props')
-        }
-    },
-}
+    getters: {},
+    modules: {
+        UserStore
+    }
+})
