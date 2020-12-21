@@ -12,6 +12,12 @@
     "prod": "npm run production",
     "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
   },
+  "nodemonConfig": {
+    "ignore": [
+      "public/*",
+      "sessions/*"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pavel-one/SsrMicroservice.git"
@@ -30,6 +36,7 @@
     "bcrypt": "^5.0.0",
     "buefy": "^0.9.4",
     "config": "^3.3.3",
+    "connect-redis": "^5.0.0",
     "cross-env": "^7.0.3",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -40,8 +47,8 @@
     "npm-run-all": "^4.1.5",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
+    "redis": "^3.0.2",
     "resolve-url-loader": "^3.1.2",
-    "session-file-store": "^1.5.0",
     "vue-router": "^3.4.9",
     "vuex": "^3.6.0"
   },

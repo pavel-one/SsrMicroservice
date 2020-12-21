@@ -6,18 +6,26 @@ require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
 const server = express();
+const redis = require('redis')
 const session = require('express-session')
-const FileStore = require('session-file-store')(session)
+const RedisStore = require('connect-redis')(session)
 const PassportService = require('./services/passport')
 const request = require('./services/response')
 
+const RedisClient = redis.createClient({
+    host: 'redis',
+})
+
+RedisClient.on('error', function(error) {
+    console.error('REDIS ERROR', error)
+});
 
 server.use(express.urlencoded({extended: true}));
 server.use(express.json());
 server.use(
     session({
         secret: process.env.APP_KEY,
-        store: new FileStore(),
+        store: new RedisStore({ client: RedisClient }),
         cookie: {
             // secure: true, //только для https
             // path: '/storage', //хуй знает, не работает, потом как нибудь разберусь

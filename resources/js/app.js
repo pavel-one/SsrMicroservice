@@ -23,28 +23,26 @@ async function initApp() {
         saveScrollPosition: true
     })
 
-    // router.beforeEach((to, from, next) => {
-    //     const user = JSON.parse(localStorage.getItem('user'))
-    //
-    //     console.log('one')
-    //     if (to.matched.some(record => record.meta.exceptAuth) && user.id !== null) {
-    //         Store.commit("setGlobalError", "Вы уже авторизованы")
-    //         next({name: 'dashboard'})
-    //     } else {
-    //         next()
-    //     }
-    // })
-
     router.beforeEach((to, from, next) => {
-        const user = JSON.parse(localStorage.getItem('user'))
+        let user = JSON.parse(localStorage.getItem('user'))
 
-        console.log('two')
-        if (to.matched.some(record => record.meta.requiresAuth) && user.id === null) {
+        if (!user) {
+            user = {
+                id: null
+            }
+        }
+
+        if (user.id === null && to.matched.some(record => record.meta.requiresAuth)) {
             Store.commit("setGlobalError", "Необходима авторизация")
             next({name: 'auth'})
-        } else {
-            next()
         }
+
+        if (user.id !== null && to.matched.some(record => record.meta.exceptAuth)) {
+            Store.commit("setGlobalError", "Вы уже авторизованы")
+            next({name: 'dashboard'})
+        }
+
+        next()
     })
 
     new Vue({

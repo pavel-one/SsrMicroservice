@@ -1,17 +1,17 @@
-const app = require('../app.class')
+const App = require('../app.class')
 
-app.router.get('ping', (req, res) => {
-    app.success(res, 'pong')
+App.router.get('/ping', (req, res) => {
+    res.success('pong')
 })
 
-app.router.get('dashboard', (req, res) => {
-    res.sendFile(app.getPath('public/index.html'))
+App.router.get('/dashboard', (req, res) => {
+    res.sendFile(App.getPath('public/index.html'))
 })
 
-app.router.get('auth', (req, res) => {
-    res.sendFile(app.getPath('public/index.html'))
+App.router.get('/auth', (req, res) => {
+    res.sendFile(App.getPath('public/index.html'))
 })
 
 
 
-module.exports = app.router
+module.exports = App.router
