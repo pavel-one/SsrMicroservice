@@ -2,6 +2,7 @@ const app = require('../app.class')
 const User = require('../models/User')
 const Site = require('../models/Site')
 const Bcrypt = require('bcrypt')
+const captureWebsite = require('capture-website')
 
 app.router.post('/auth', auth)
 app.router.post('/register', register)
@@ -61,9 +62,25 @@ async function addSite(req, res) {
         updated_at: new Date
     })
 
+
     newSite.save()
-        .then(r => {
-            return res.success('Успешно', newSite, 201)
+        .then(site => {
+            const name = site.url.replace('http://', '').replace('https://', '').replace('/', '_') + '.png';
+            const path = 'public/user_screenshots/' + name;
+            captureWebsite.file(site.url, app.getPath(path), {
+                launchOptions: {
+                    args: [
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox'
+                    ]
+                }
+            }).then(r => {
+                site.photo = name
+                site.save()
+                console.log('success')
+            })
+
+            return res.success('Успешно', site, 201)
         })
         .catch(r => {
             console.log(r.message)
@@ -117,10 +134,15 @@ async function register(req, res) {
         password: hash
     })
 
-    newUser.save().then(r => {
-        return res.success('Регистрация прошла успешно', [], 201)
+    newUser.save().then(user => {
+        req.logIn(user, err => {
+            if (err) {
+                return res.fail('Ошибка авторизации')
+            } else {
+                return res.success('Регистрация прошла успешно', [], 201)
+            }
+        })
     }).catch(error => {
-        console.log(error)
         return res.fail('Ошибка сохранения пользователя, пожалуйста, попробуйте позже или с другими данными')
     })
 

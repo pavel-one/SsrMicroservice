@@ -65,7 +65,6 @@ export default {
                         this.$store.dispatch('fetchUser').then(res => {
                             this.$router.push({name: 'dashboard'})
                         })
-
                     }
                 })
                 .catch(error => {
@@ -82,6 +81,11 @@ export default {
                         message: response.data.msg,
                         type: response.data.success ? 'is-success' : 'is-danger'
                     })
+                    if (response.data.success) {
+                        this.$store.dispatch('fetchUser').then(res => {
+                            this.$router.push({name: 'dashboard'})
+                        })
+                    }
                 })
         }
     }

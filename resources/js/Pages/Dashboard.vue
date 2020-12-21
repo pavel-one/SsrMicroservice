@@ -7,8 +7,9 @@
         <div class="site-list-container">
             <div v-for="site in sites" @click="remove(site._id)" class="card site-item">
                 <div class="card-image">
+                    <b-loading :is-full-page="false" v-model="!site.photo"></b-loading>
                     <figure class="image is-4by3">
-                        <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image">
+                        <img :src="site.photo ? '/user_screenshots/'+site.photo : 'https://bulma.io/images/placeholders/1280x960.png'" alt="Placeholder image">
                     </figure>
                 </div>
                 <div class="card-content">
@@ -77,7 +78,6 @@ export default {
     },
     methods: {
         remove: function (id) {
-            console.log('ID ', id)
             this.$http.delete('/sites/' + id).then(response => {
                 this.$buefy.notification.open({
                     message: response.data.msg,
@@ -106,6 +106,10 @@ export default {
     ,
     mounted() {
         this.$store.dispatch('fetchSites')
+        //TODO: Сделать чтобы проверяло только нужные айтемы
+        setInterval(() => {
+            this.$store.dispatch('fetchSites')
+        }, 1000)
     }
 }
 </script>
