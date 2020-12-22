@@ -10,6 +10,14 @@ const createNewSiteEvent = async function (site) {
     await createScreenshot(site)
 }
 
+const removeSiteEvent = async function (site) {
+    const path = 'public/user_screenshots/' + site.photo;
+
+    if (fs.existsSync(path)) {
+        fs.unlinkSync(path)
+    }
+}
+
 async function createScreenshot(site) {
     const name = site.url.replace('http://', '').replace('https://', '').replace('/', '_') + '.png';
     const path = 'public/user_screenshots/' + name;
@@ -31,6 +39,7 @@ async function createScreenshot(site) {
         console.log('ERROR: ', error.message)
     })
 }
+
 async function fillMetaData(site) {
     const browser = await puppeteer.launch({
         headless: true,
@@ -53,5 +62,6 @@ async function fillMetaData(site) {
 }
 
 module.exports = {
-    createNewSiteEvent
+    createNewSiteEvent,
+    removeSiteEvent
 }
