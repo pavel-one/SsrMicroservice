@@ -2,7 +2,7 @@ const app = require('../app.class')
 const User = require('../models/User')
 const Site = require('../models/Site')
 const Bcrypt = require('bcrypt')
-const captureWebsite = require('capture-website')
+const {createNewSiteEvent} = require('../events/SiteEvents')
 
 app.router.post('/auth', auth)
 app.router.post('/register', register)
@@ -62,28 +62,12 @@ async function addSite(req, res) {
         updated_at: new Date
     })
 
-
     newSite.save()
         .then(site => {
-            const name = site.url.replace('http://', '').replace('https://', '').replace('/', '_') + '.png';
-            const path = 'public/user_screenshots/' + name;
-            captureWebsite.file(site.url, app.getPath(path), {
-                launchOptions: {
-                    args: [
-                        '--no-sandbox',
-                        '--disable-setuid-sandbox'
-                    ]
-                }
-            }).then(r => {
-                site.photo = name
-                site.save()
-                console.log('success')
-            })
-
+            createNewSiteEvent(site)
             return res.success('Успешно', site, 201)
         })
         .catch(r => {
-            console.log(r.message)
             return res.fail('Ошибка создания, обратитесь к администратору')
         })
 }

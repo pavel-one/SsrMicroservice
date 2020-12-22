@@ -8,8 +8,10 @@ export default [
         component: Auth,
         props: {
             title: 'Авторизация'
-        }
-
+        },
+        meta: {
+            exceptAuth: true
+        },
     },
     {
         path: '/auth',

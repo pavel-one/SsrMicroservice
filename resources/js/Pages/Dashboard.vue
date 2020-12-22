@@ -16,12 +16,12 @@
                     <div class="media">
                         <div class="media-content">
                             <p class="title is-4">{{ site.name }}</p>
-                            <p class="subtitle is-6">Тут будет title главной страницы который спарсится</p>
+                            <p class="subtitle is-6">{{ site.title }}</p>
                         </div>
                     </div>
 
                     <div class="content">
-                        Тут будет дескрипшон который спарсится с главной страницы сайта
+                        {{ site.description }}
                         <hr>
                         <time class="has-text-centered" style="display: block">{{site.created_at | moment("DD.MM.YYYY") }}</time>
                     </div>
