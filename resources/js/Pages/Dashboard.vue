@@ -13,6 +13,7 @@
                     </figure>
                 </div>
                 <div class="card-content">
+                    <b-loading :is-full-page="false" v-model="!site.title"></b-loading>
                     <div class="media">
                         <div class="media-content">
                             <p class="title is-4">{{ site.name }}</p>
