@@ -1,4 +1,5 @@
 const {Schema, model} = require('mongoose')
+const url = require('url')
 
 const schema = new Schema({
     name: {
@@ -31,15 +32,31 @@ const schema = new Schema({
     },
     created_at: {
         type: Date
+    },
+    sitemap: {
+        type: String
     }
 })
 
 schema.methods.getDomain = function () {
-    return this.url.split('://')[1].split('/')[0] || null
+    return url.parse(this.url).hostname
 }
 
 schema.methods.getUrlSchema = function () {
-    return this.url.split('://')[0]
+    return url.parse(this.url).protocol
+}
+
+schema.methods.addLinks = async function (links) {
+    if (!this.sitemap) {
+        this.sitemap = JSON.stringify([{links}])
+        return this.save()
+    }
+
+    const linksObj = JSON.parse(this.sitemap)
+    linksObj.push([{links}])
+
+    this.sitemap = JSON.stringify(linksObj)
+    return this.save()
 }
 
 module.exports = model('Site', schema)

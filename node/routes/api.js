@@ -2,16 +2,16 @@ const app = require('../app.class')
 const User = require('../models/User')
 const Site = require('../models/Site')
 const Bcrypt = require('bcrypt')
+const url = require('url')
 const {createNewSiteEvent, removeSiteEvent} = require('../events/SiteEvents')
 
 app.router.post('/auth', auth)
 app.router.post('/register', register)
-app.router.get('/props', props)
 app.router.get('/user', user)
 
 app.router.put('/sites', addSite)
 app.router.delete('/sites/:id', removeSite)
-app.router.get('/sites', getSite)
+app.router.get('/sites', getSites)
 
 async function removeSite(req, res) {
     const id = req.params.id
@@ -36,8 +36,15 @@ async function removeSite(req, res) {
     return res.success('Успешно')
 }
 
-async function getSite(req, res) {
-    const sites = await Site.find().exec()
+async function getSites(req, res) {
+    const sites = await Site.find().select(
+        '_id ' +
+        'base_url ' +
+        'created_at ' +
+        'photo name ' +
+        'title ' +
+        'description '
+    ).exec()
 
     res.success('Успешно', sites)
 }
@@ -46,8 +53,9 @@ async function addSite(req, res) {
     if (!req.body.name || !req.body.url) {
         return res.fail('Не передано название или адрес сайта')
     }
-    let tmp = req.body.url.split('://')
-    let base_url = tmp[0] + '://' + tmp[1].split('/')[0]
+    const urlObj = url.parse(req.body.url)
+
+    let base_url = urlObj.protocol + '//' + urlObj.hostname
 
     const SiteObj = await Site.findOne({
         base_url: base_url
@@ -60,7 +68,7 @@ async function addSite(req, res) {
     const newSite = new Site({
         user_id: req.user.id,
         name: req.body.name,
-        url: req.body.url,
+        url: urlObj.href,
         base_url: base_url,
         created_at: new Date,
         updated_at: new Date
@@ -92,11 +100,6 @@ async function user(req, res) {
     }
 
     return res.success('Успешно', user)
-}
-
-async function props(req, res) {
-
-    return res.success('Успешно', [])
 }
 
 async function register(req, res) {
