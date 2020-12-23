@@ -18,6 +18,11 @@ const schema = new Schema({
         required: true,
         unique: true
     },
+    base_url: {
+        type: String,
+        required: true,
+        unique: true
+    },
     photo: {
         type: String
     },
@@ -28,5 +33,13 @@ const schema = new Schema({
         type: Date
     }
 })
+
+schema.methods.getDomain = function () {
+    return this.url.split('://')[1].split('/')[0] || null
+}
+
+schema.methods.getUrlSchema = function () {
+    return this.url.split('://')[0]
+}
 
 module.exports = model('Site', schema)

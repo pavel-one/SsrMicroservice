@@ -30,7 +30,7 @@ async function removeSite(req, res) {
         return res.fail('Не найден такой объект')
     }
 
-    removeSiteEvent(siteObj)
+    await removeSiteEvent(siteObj)
     await siteObj.remove()
 
     return res.success('Успешно')
@@ -46,9 +46,11 @@ async function addSite(req, res) {
     if (!req.body.name || !req.body.url) {
         return res.fail('Не передано название или адрес сайта')
     }
+    let tmp = req.body.url.split('://')
+    let base_url = tmp[0] + '://' + tmp[1].split('/')[0]
 
     const SiteObj = await Site.findOne({
-        url: req.body.url
+        base_url: base_url
     })
 
     if (SiteObj) {
@@ -59,6 +61,7 @@ async function addSite(req, res) {
         user_id: req.user.id,
         name: req.body.name,
         url: req.body.url,
+        base_url: base_url,
         created_at: new Date,
         updated_at: new Date
     })

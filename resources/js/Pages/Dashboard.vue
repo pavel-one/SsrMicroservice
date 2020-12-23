@@ -5,29 +5,7 @@
             <h2 class="subtitle has-text-centered">Добро пожаловать, {{ user.name || user.email }}</h2>
         </template>
         <div class="site-list-container">
-            <div v-for="site in sites" @click="remove(site._id)" class="card site-item">
-                <div class="card-image">
-                    <b-loading :is-full-page="false" v-model="!site.photo"></b-loading>
-                    <figure class="image is-4by3">
-                        <img :src="site.photo ? '/user_screenshots/'+site.photo : 'https://bulma.io/images/placeholders/1280x960.png'" alt="Placeholder image">
-                    </figure>
-                </div>
-                <div class="card-content">
-                    <b-loading :is-full-page="false" v-model="!site.title"></b-loading>
-                    <div class="media">
-                        <div class="media-content">
-                            <p class="title is-4">{{ site.name }}</p>
-                            <p class="subtitle is-6">{{ site.title }}</p>
-                        </div>
-                    </div>
-
-                    <div class="content">
-                        {{ site.description }}
-                        <hr>
-                        <time class="has-text-centered" style="display: block">{{site.created_at | moment("DD.MM.YYYY") }}</time>
-                    </div>
-                </div>
-            </div>
+            <site-item v-for="site in sites" :key="site.id" :site="site"></site-item>
             <div class="card site-item add-button" @click="modal_active = !modal_active">
                 <b-icon
                     pack="fas"
@@ -55,9 +33,10 @@
 <script>
 import Layout from '../Components/Templates/Layout'
 import AddSiteForm from '../Components/Chunks/forms/add-site'
+import SiteItem from '../Components/Chunks/Site/item'
 
 export default {
-    components: {AddSiteForm, Layout},
+    components: {AddSiteForm, Layout, SiteItem},
     props: ['title'],
     metaInfo() {
         return {
@@ -78,16 +57,6 @@ export default {
         }
     },
     methods: {
-        remove: function (id) {
-            this.$http.delete('/sites/' + id).then(response => {
-                this.$buefy.notification.open({
-                    message: response.data.msg,
-                    type: response.data.success ? 'is-success' : 'is-danger'
-                })
-
-                this.$store.dispatch('fetchSites')
-            })
-        },
         logout: function () {
             this.$http.post('/logout').then(response => {
                 this.$buefy.notification.open({
@@ -121,12 +90,6 @@ export default {
     flex-direction: row;
     justify-content: center;
     flex-wrap: wrap;
-}
-
-.site-item {
-    width: 300px;
-    margin: 10px;
-    cursor: pointer;
 }
 
 .add-button {

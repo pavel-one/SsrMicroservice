@@ -11,15 +11,22 @@ const createNewSiteEvent = async function (site) {
 }
 
 const removeSiteEvent = async function (site) {
+    if (site.photo === 'no-photo.png') {
+        return true
+    }
+
     const path = 'public/user_screenshots/' + site.photo;
 
     if (fs.existsSync(path)) {
         fs.unlinkSync(path)
+        return true
     }
+
+    return false
 }
 
 async function createScreenshot(site) {
-    const name = site.url.replace('http://', '').replace('https://', '').replace('/', '_') + '.png';
+    const name = site.getDomain() + '.png'
     const path = 'public/user_screenshots/' + name;
     if (fs.existsSync(path)) {
         fs.unlinkSync(path)
@@ -37,6 +44,8 @@ async function createScreenshot(site) {
         site.save()
     }).catch(error => {
         console.log('ERROR: ', error.message)
+        site.photo = 'no-photo.png'
+        site.save()
     })
 }
 
