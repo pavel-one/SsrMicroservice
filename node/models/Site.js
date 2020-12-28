@@ -35,6 +35,9 @@ const schema = new Schema({
     },
     sitemap: {
         type: String
+    },
+    load: {
+        type: Boolean
     }
 })
 
