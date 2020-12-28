@@ -10,7 +10,7 @@ const redis = require('redis')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
 const PassportService = require('./services/passport')
-const request = require('./services/response')
+const response = require('./services/response')
 
 const RedisClient = redis.createClient({
     host: 'redis',
@@ -39,7 +39,7 @@ server.use(
 
 server.use(PassportService.initialize(undefined))
 server.use(PassportService.session(undefined))
-server.use(request)
+server.use(response)
 
 server.use('/api', require('./routes/api')) //API роуты
 server.use('/', require('./routes/site')) //Роуты обычных страниц сайта

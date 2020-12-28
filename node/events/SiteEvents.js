@@ -1,15 +1,13 @@
 const fs = require('fs')
-const puppeteer = require('puppeteer')
 const captureWebsite = require('capture-website')
 const pathClass = require('path')
-const cheerio = require('cheerio')
+const Spider = require("../services/spider");
 
 const createNewSiteEvent = async function (site) {
 
-    await fillMetaData(site)
+    // await fillMetaData(site)
+    mapSite(site)
     await createScreenshot(site)
-
-    // await siteMap(site)
 }
 
 const removeSiteEvent = async function (site) {
@@ -51,83 +49,56 @@ async function createScreenshot(site) {
     })
 }
 
-async function fillMetaData(site) {
-    const $ = await getHtml(site.url)
+function mapSite(site) {
+    let spider = new Spider({
+        concurrent: 1,
+        delay: 30000,
+        logs: process.stderr,
+        allowDuplicates: false,
+        catchErrors: true,
+        addReferrer: false,
+        xhr: false,
+        keepAlive: false,
 
-    site.title = $('title').text()
-    site.description = $('meta[name="description"]').attr('content') || ''
-    return site.save()
-}
-
-async function siteMap(site) {
-    const $ = await getHtml(site.base_url)
-    const links = await getLinks($, site.base_url)
-
-    await site.addLinks(links)
-
-    await parse(site)
-
-
-    console.log('saved')
-}
-
-async function parse(site) {
-    let data = JSON.parse(site.sitemap)
-    console.log('PARSE: ', data.length)
-
-    let startLinks = data[data.length - 1].links
-
-    for (const value of startLinks) {
-        let $ = await getHtml(site.base_url + '/' + value)
-        let links = await getLinks($, site.base_url)
-        await site.addLinks(links)
-    }
-}
-
-//helpers
-async function getHtml(url) {
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-        ]
+        //- All options are passed to `request` module, for example:
+        headers: {'user-agent': 'node-spider'},
+        siteObj: site,
+        encoding: 'utf8'
     });
-    const page = await browser.newPage();
-    await page.goto(url);
-    return cheerio.load(await page.content())
-}
 
-async function getLinks($, url) {
-    const links = $('a')
-    const out = []
+    const handleRequest = function (doc) {
+        // new page crawled
+        // console.log(doc); // response object
+        // console.log(doc.url); // page url
+        // uses cheerio, check its docs for more info
 
-    if (links.length === 0) {
-        return out
-    }
+        // doc.res.site.title = doc.$('title').text()
+        // doc.res.site.description = doc.$('meta[name="description"]').attr('content') || ''
+        // doc.res.site.save()
 
-    links.each((i, item) => {
-        let href = $(item).attr('href')
-        if (!href) {
-            return true;
-        }
-        href = href.replace(url, '')
+        console.log('Handle itarate: ', doc.url)
 
-        if (href === '#' || href === '' || href === '/') {
-            return true;
-        }
-        if (href.startsWith('http')) {
-            return true
-        }
-        if (href.startsWith('#')) {
-            return true
-        }
-        out.push(href)
-    })
-    return out;
+        doc.$('a').each(function (i, elem) {
+            let href = doc.$(elem).attr('href')
+            if (!href) {
+                return
+            }
+
+            href = href.split('#')[0];
+            if (!href) {
+                return;
+            }
+
+            let url = doc.resolve(href);
+            // crawl more
+            spider.queue(url, handleRequest);
+        });
+    };
+
+    spider.queue(site.base_url, handleRequest);
 }
 
 module.exports = {
     createNewSiteEvent,
-    removeSiteEvent,
+    removeSiteEvent
 }
