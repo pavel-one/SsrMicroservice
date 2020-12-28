@@ -2,7 +2,6 @@ const Spider = require('node-spider');
 const puppeteer = require('puppeteer')
 
 Spider.prototype._request = async function (opts, done) {
-    //await синтаксис
     const browser = await puppeteer.launch({
         headless: true,
         args: [
@@ -14,6 +13,8 @@ Spider.prototype._request = async function (opts, done) {
     const page = await browser.newPage()
     await page.goto(opts.url)
     const body = await page.content()
+
+    await browser.close()
 
     done(false, {
         body: body,

@@ -12,3 +12,5 @@ status:
 	docker-compose ps
 rm:
 	docker-compose rm
+restart:
+	make down && make up

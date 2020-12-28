@@ -11,7 +11,7 @@
             <div class="media">
                 <div class="media-content">
                     <p class="title is-4">{{ site.name }}</p>
-                    <p class="subtitle is-6">{{ site.title }}</p>
+                    <p class="subtitle is-6">{{ site.title || 'Грузим заголовок' }}</p>
                 </div>
             </div>
 

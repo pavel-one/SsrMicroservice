@@ -51,9 +51,9 @@ async function createScreenshot(site) {
 
 function mapSite(site) {
     let spider = new Spider({
-        concurrent: 1,
-        delay: 30000,
-        logs: process.stderr,
+        concurrent: 4, //Количество потоков
+        delay: 5000, //Задержка после каждого парсинга
+        //logs: process.stderr, //Куда логировать
         allowDuplicates: false,
         catchErrors: true,
         addReferrer: false,
@@ -61,22 +61,21 @@ function mapSite(site) {
         keepAlive: false,
 
         //- All options are passed to `request` module, for example:
-        headers: {'user-agent': 'node-spider'},
+        headers: {'user-agent': 'node-spider'}, //Пока что не используется
         siteObj: site,
-        encoding: 'utf8'
+        encoding: 'utf8' //Как и это
     });
 
     const handleRequest = function (doc) {
-        // new page crawled
-        // console.log(doc); // response object
-        // console.log(doc.url); // page url
-        // uses cheerio, check its docs for more info
 
-        // doc.res.site.title = doc.$('title').text()
-        // doc.res.site.description = doc.$('meta[name="description"]').attr('content') || ''
-        // doc.res.site.save()
+        //Первая страница
+        if (doc.url === doc.res.site.base_url) {
+            doc.res.site.title = doc.$('title').text()
+            doc.res.site.description = doc.$('meta[name="description"]').attr('content') || ''
+            doc.res.site.save()
+        }
 
-        console.log('Handle itarate: ', doc.url)
+        console.log('HANDLE: ', doc.url)
 
         doc.$('a').each(function (i, elem) {
             let href = doc.$(elem).attr('href')
@@ -89,8 +88,24 @@ function mapSite(site) {
                 return;
             }
 
-            let url = doc.resolve(href);
-            // crawl more
+            if (href.substr(0, 4) === 'http') {
+                return;
+            }
+            if (href[0] === '/') {
+                return;
+            }
+
+            let $base = doc.$('base'),
+                addBase = ''
+            if ($base.length) {
+                addBase = $base.attr('href')
+            }
+            if (href[0] !== '/') {
+                href = addBase + href
+            }
+            const url = doc.resolve(href);
+
+            // Запускам кравлер следующей страницы
             spider.queue(url, handleRequest);
         });
     };
