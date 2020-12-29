@@ -10,6 +10,8 @@ services:
       dockerfile: ./docker/Dockerfile
     volumes:
       - .:/home/node/app
+    ports:
+      - 35729:35729
     depends_on:
       - db
       - redis

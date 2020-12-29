@@ -1,0 +1,13 @@
+{
+  "verbose": true,
+  "watch": [
+    "node/"
+  ],
+  "ignore": [
+    "*.json",
+    "*.vue",
+    "public/*",
+    "sessions/*",
+    "resources/*"
+  ]
+}
