@@ -78,9 +78,15 @@ class SiteParser {
         if (url === this.siteObj.base_url) {
             this.parserClass.log(err, this.siteObj._id)
             await this.parserClass.events.removeSiteEvent(this.siteObj)
-            // this.siteObj.remove()
+            await this.parserClass.removeSite(this.siteObj._id)
             // console.log(SiteModel.findById(this.siteObj._id))
         }
+    }
+
+    //TODO: Хуйня
+    async removeSite(id) {
+        const siteObj = await SiteModel.findOne({_id: id})
+        await siteObj.remove()
     }
 
     async done() {
