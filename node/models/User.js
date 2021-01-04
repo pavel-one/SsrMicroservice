@@ -15,8 +15,7 @@ const schema = new Schema({
         required: true
     },
     phone: {
-        type: Number,
-        unique: true
+        type: Number
     }
 })
 

@@ -88,15 +88,13 @@ async function user(req, res) {
     const user = {
         id: null,
         name: null,
-        email: null,
-        phone: null
+        email: null
     }
 
     if (req.user) {
         user.id = req.user.id || null
         user.name = req.user.name || null
         user.email = req.user.email || null
-        user.phone = req.user.phone || null
     }
 
     return res.success('Успешно', user)
@@ -134,6 +132,7 @@ async function register(req, res) {
             }
         })
     }).catch(error => {
+        console.log(error)
         return res.fail('Ошибка сохранения пользователя, пожалуйста, попробуйте позже или с другими данными')
     })
 
