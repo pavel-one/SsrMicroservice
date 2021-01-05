@@ -1,3 +1,4 @@
+//TODO: Зарефакторить это дерьмо
 const app = require('../app.class')
 const User = require('../models/User')
 const Site = require('../models/Site')
@@ -9,6 +10,8 @@ app.router.post('/auth', auth)
 app.router.post('/register', register)
 app.router.get('/user', user)
 
+app.router.get('/site/:id', getSite)
+
 app.router.put('/sites', addSite)
 app.router.delete('/sites/:id', removeSite)
 app.router.get('/sites', getSites)
@@ -16,6 +19,10 @@ app.router.get('/sites', getSites)
 async function removeSite(req, res) {
     const id = req.params.id
     const user_id = req.user.id
+
+    if (!user_id) {
+        return res.fail('Вы не авторизованы')
+    }
 
     if (!id) {
         return res.fail('Не передан id')
@@ -36,8 +43,17 @@ async function removeSite(req, res) {
 }
 
 async function getSites(req, res) {
-    const sites = await Site.find().select(
+    const user_id = req.user.id
+
+    if (!user_id) {
+        return res.fail('Вы не авторизованы')
+    }
+
+    const sites = await Site.find({
+        user_id: user_id
+    }).select(
         '_id ' +
+        'user_id ' +
         'base_url ' +
         'created_at ' +
         'photo name ' +
@@ -48,6 +64,27 @@ async function getSites(req, res) {
     ).exec()
 
     res.success('Успешно', sites)
+}
+
+async function getSite(req, res) {
+    const user_id = req.user.id
+
+    if (!user_id) {
+        return res.fail('Вы не авторизованы')
+    }
+
+    const site = await Site.findOne({
+        _id: req.params.id,
+        user_id: user_id
+    }).catch(err => {
+        //TODO: Логировать ошибку
+    })
+
+    if (!site) {
+        return res.fail('Такого сайта не существует')
+    }
+
+    return res.success('Успешно', site)
 }
 
 async function addSite(req, res) {

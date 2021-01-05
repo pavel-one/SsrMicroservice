@@ -33,7 +33,7 @@
                             </b-icon>
                             {{site.loadParser ? 'Индексируется' : 'Индексировать'}}
                         </b-button>
-                        <b-button type="is-danger is-light" size="is-small" @click="remove(site._id)">
+                        <b-button type="is-danger is-light" size="is-small" @click.prevent="remove(site._id)">
                             <b-icon style="margin-right: 5px" icon="fas fa-trash"></b-icon>
                             Удалить
                         </b-button>

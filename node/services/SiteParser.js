@@ -28,6 +28,9 @@ async function handleParser(doc) {
         doc.res.site.title = doc.$('title').text()
         doc.res.site.description = doc.$('meta[name="description"]').attr('content') || ''
         doc.res.site.save()
+    } else {
+        doc.res.site.load_date = new Date()
+        doc.res.site.save()
     }
 
     doc.$('a').each((i, elem) => {

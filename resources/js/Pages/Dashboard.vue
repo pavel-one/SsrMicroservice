@@ -75,6 +75,13 @@ export default {
     }
     ,
     mounted() {
+        if (this.$route.params.err) {
+            this.$buefy.notification.open({
+                message: this.$route.params.err,
+                type: 'is-warning'
+            })
+        }
+
         this.$store.dispatch('fetchSites')
         //TODO: Сделать чтобы проверяло только нужные айтемы
         setInterval(() => {

@@ -1,6 +1,7 @@
 import Auth from '../js/Pages/Auth'
 import Dashboard from '../js/Pages/Dashboard'
 import Site from '../js/Pages/Site'
+import Store from "../js/Store/Store";
 
 export default [
     {
@@ -45,6 +46,20 @@ export default [
         },
         props: {
             title: 'Страница сайта'
+        },
+        beforeEnter: async (to, from, next) => {
+            await Store.dispatch('fetchSite', {
+                id: to.params.id
+            }).catch(err => {
+                next({
+                    name: 'dashboard',
+                    params: {
+                        err: err.message
+                    }
+                })
+            })
+
+            next()
         }
     }
 ]

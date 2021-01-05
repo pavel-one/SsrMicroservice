@@ -29,6 +29,7 @@ async function initApp() {
         saveScrollPosition: true
     })
 
+    //TODO: Говнина, переписать
     router.beforeEach((to, from, next) => {
         let user = JSON.parse(localStorage.getItem('user'))
 
