@@ -1,7 +1,7 @@
 <template>
     <Layout>
         Route Params Id {{ $route.params.id }} <br>
-        Store: {{site}}
+        Store: {{ site }}
     </Layout>
 </template>
 
@@ -11,6 +11,11 @@ import Store from "../Store/Store";
 
 export default {
     components: {Layout},
+    metaInfo() {
+        return {
+            title: 'Информация о сайте: ' + this.site.name,
+        }
+    },
     computed: {
         site() {
             return this.$store.getters.getSite

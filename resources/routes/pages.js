@@ -44,9 +44,6 @@ export default [
         meta: {
             requiresAuth: true
         },
-        props: {
-            title: 'Страница сайта'
-        },
         beforeEnter: async (to, from, next) => {
             await Store.dispatch('fetchSite', {
                 id: to.params.id
