@@ -13,7 +13,8 @@ const schema = new Schema({
         type: String
     },
     user_id: {
-        type: Schema.Types.ObjectId
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     },
     url: {
         type: String,
@@ -33,9 +34,6 @@ const schema = new Schema({
     },
     created_at: {
         type: Date
-    },
-    sitemap: {
-        type: String
     },
     load_date: {
         type: Date

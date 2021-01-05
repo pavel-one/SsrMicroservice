@@ -9,6 +9,7 @@ const schema = new Schema({
     site_id: {
         type: Schema.Types.ObjectId,
         required: true,
+        ref: 'Site'
     },
     title: {
         type: String,
