@@ -65,25 +65,13 @@ export default {
                 })
 
                 if (response.data.success) {
-                    this.$store.dispatch('fetchUser')
-                        .then(res => {
-                            this.$router.push({name: 'auth'})
-                        })
+                    this.$router.push({name: 'auth'})
                 }
             })
         }
     }
     ,
     mounted() {
-        if (this.$route.params.err) {
-            this.$buefy.notification.open({
-                message: this.$route.params.err,
-                type: 'is-warning'
-            })
-        }
-
-        this.$store.dispatch('fetchSites')
-        //TODO: Сделать чтобы проверяло только нужные айтемы
         setInterval(() => {
             this.$store.dispatch('fetchSites')
         }, 1000)

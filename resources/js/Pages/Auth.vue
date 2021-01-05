@@ -1,6 +1,6 @@
 <template>
     <layout :css="container_style">
-        <template v-slot:hero >
+        <template v-slot:hero>
             <h1 class="title has-text-centered">Необходима аутентификация</h1>
             <h2 class="subtitle has-text-centered">Войдите или зарегистрируйтесь</h2>
         </template>
@@ -12,7 +12,8 @@
                 <b-field label="Пароль">
                     <b-input type="password" v-model="form.password" password-reveal></b-input>
                 </b-field>
-                <b-button :style="{margin: 'auto', display: 'block'}" native-type="submit" type="is-primary is-light" class="has-text-centered">
+                <b-button :style="{margin: 'auto', display: 'block'}" native-type="submit" type="is-primary is-light"
+                          class="has-text-centered">
                     Войти или
                     Зарегистрироваться
                 </b-button>
@@ -53,40 +54,39 @@ export default {
         }
     },
     methods: {
-        submit: function () {
-            this.$http.post('/api/auth', this.form)
-                .then(response => {
-                    this.$buefy.notification.open({
-                        message: response.data.msg,
-                        type: response.data.success ? 'is-success' : 'is-danger'
-                    })
+        submit: async function () {
+            let response;
 
-                    if (response.data.success) {
-                        this.$store.dispatch('fetchUser').then(res => {
-                            this.$router.push({name: 'dashboard'})
-                        })
-                    }
+            try {
+                response = await this.$http.post('/api/auth', this.form)
+            } catch (e) {
+                this.$buefy.dialog.confirm({
+                    message: e.response.data.msg,
+                    onConfirm: this.register
                 })
-                .catch(error => {
-                    this.$buefy.dialog.confirm({
-                        message: error.response.data.msg,
-                        onConfirm: this.register
-                    })
-                })
+
+                return;
+            }
+
+            this.$buefy.notification.open({
+                message: response.data.msg,
+                type: response.data.success ? 'is-success' : 'is-danger'
+            })
+
+            if (response.data.success) {
+                await this.$router.push({name: 'dashboard'})
+            }
         },
-        register: function () {
-            this.$http.post('/api/register', this.form)
-                .then(response => {
-                    this.$buefy.notification.open({
-                        message: response.data.msg,
-                        type: response.data.success ? 'is-success' : 'is-danger'
-                    })
-                    if (response.data.success) {
-                        this.$store.dispatch('fetchUser').then(res => {
-                            this.$router.push({name: 'dashboard'})
-                        })
-                    }
-                })
+        register: async function () {
+            const response = await this.$http.post('/api/register', this.form)
+
+            this.$buefy.notification.open({
+                message: response.data.msg,
+                type: response.data.success ? 'is-success' : 'is-danger'
+            })
+            if (response.data.success) {
+                await this.$router.push({name: 'dashboard'})
+            }
         }
     }
 }

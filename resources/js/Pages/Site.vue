@@ -21,11 +21,6 @@ export default {
             return this.$store.getters.getSite
         }
     },
-    // mounted() {
-    //     this.$store.dispatch('fetchSite', {
-    //         id: this.$route.params.id
-    //     })
-    // }
 }
 </script>
 

@@ -43,14 +43,13 @@ async function removeSite(req, res) {
 }
 
 async function getSites(req, res) {
-    const user_id = req.user.id
 
-    if (!user_id) {
+    if (!req.user) {
         return res.fail('Вы не авторизованы')
     }
 
     const sites = await Site.find({
-        user_id: user_id
+        user_id: req.user.id
     }).select(
         '_id ' +
         'user_id ' +
@@ -67,15 +66,14 @@ async function getSites(req, res) {
 }
 
 async function getSite(req, res) {
-    const user_id = req.user.id
 
-    if (!user_id) {
+    if (!req.user) {
         return res.fail('Вы не авторизованы')
     }
 
     const site = await Site.findOne({
         _id: req.params.id,
-        user_id: user_id
+        user_id: req.user.id
     }).catch(err => {
         //TODO: Логировать ошибку
     })
@@ -123,19 +121,11 @@ async function addSite(req, res) {
 }
 
 async function user(req, res) {
-    const user = {
-        id: null,
-        name: null,
-        email: null
+    if (!req.user) {
+        return res.fail('Вы не авторизованы', {})
     }
 
-    if (req.user) {
-        user.id = req.user.id || null
-        user.name = req.user.name || null
-        user.email = req.user.email || null
-    }
-
-    return res.success('Успешно', user)
+    return res.success('Успешно', req.user)
 }
 
 async function register(req, res) {
@@ -194,13 +184,6 @@ async function auth(req, res, next) {
     if (!user) {
         return res.fail('Пользователь с такой парой логин/пароль не найден, зарегистрироваться?', [], 401)
     }
-
-    //Хуйня ебучая, авторизовывать через мидлвар - это пиздец
-    // PassportService.authenticate('local', {
-    //     badRequestMessage: 'Не хватает параметров'
-    // },(err, user, info) => {
-    //     console.log('AUTH:', err, user, info)
-    // })(req, res, next)
 
     if (!user.validPassword(req.body.password)) {
         return res.fail('Пароль не верен')

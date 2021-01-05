@@ -29,23 +29,17 @@ async function initApp() {
         saveScrollPosition: true
     })
 
-    //TODO: Говнина, переписать
-    router.beforeEach((to, from, next) => {
-        let user = JSON.parse(localStorage.getItem('user'))
+    router.beforeEach(async (to, from, next) => {
+        await Store.dispatch('fetchUser')
+        const user = Store.getters.getUser
 
-        if (!user) {
-            user = {
-                id: null
-            }
-        }
-
-        if (user.id === null && to.matched.some(record => record.meta.requiresAuth)) {
-            Store.commit("setGlobalError", "Необходима авторизация")
+        if (to.matched.some(record => record.meta.requiresAuth) && !user._id) {
+            Store.commit('setError', 'Необходима авторизация')
             next({name: 'auth'})
         }
 
-        if (user.id !== null && to.matched.some(record => record.meta.exceptAuth)) {
-            Store.commit("setGlobalError", "Вы уже авторизованы")
+        if (to.matched.some(record => record.meta.exceptAuth) && user._id) {
+            Store.commit('setError', 'Вы уже авторизованы')
             next({name: 'dashboard'})
         }
 
@@ -56,14 +50,9 @@ async function initApp() {
         render: h => h(App),
         el: '#app',
         store: Store,
-        methods: Store.methods,
-        mounted() {
-            this.$store.dispatch('fetchUser')
-        },
         router
     })
 
-    console.log('init')
 }
 
 initApp()

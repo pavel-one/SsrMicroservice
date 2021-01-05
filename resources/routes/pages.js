@@ -35,6 +35,10 @@ export default [
         },
         props: {
             title: 'Личный кабинет'
+        },
+        beforeEnter: async (to, from, next) => {
+            await Store.dispatch('fetchSites')
+            next()
         }
     },
     {
@@ -45,16 +49,16 @@ export default [
             requiresAuth: true
         },
         beforeEnter: async (to, from, next) => {
-            await Store.dispatch('fetchSite', {
-                id: to.params.id
-            }).catch(err => {
-                next({
-                    name: 'dashboard',
-                    params: {
-                        err: err.message
-                    }
+            try {
+                await Store.dispatch('fetchSite', {
+                    id: to.params.id
                 })
-            })
+            } catch (e) {
+                Store.commit('setError', e.message)
+                next({
+                    name: 'dashboard'
+                })
+            }
 
             next()
         }

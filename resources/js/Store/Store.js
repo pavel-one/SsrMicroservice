@@ -7,11 +7,19 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     actions: {},
-    mutations: {},
-    state: {
-
+    mutations: {
+        setError(state, msg) {
+            state.AppError = msg
+        }
     },
-    getters: {},
+    state: {
+        AppError: undefined
+    },
+    getters: {
+        AppError(state) {
+            return state.AppError
+        }
+    },
     modules: {
         UserStore,
         SiteStore

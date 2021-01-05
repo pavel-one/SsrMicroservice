@@ -15,6 +15,14 @@
 
 <script>
 export default {
-    props: ['css']
+    props: ['css'],
+    mounted() {
+        if (this.$store.getters.AppError) {
+            this.$buefy.notification.open({
+                message: this.$store.getters.AppError,
+                type: 'is-warning'
+            })
+        }
+    }
 }
 </script>
