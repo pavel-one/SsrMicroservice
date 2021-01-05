@@ -42,7 +42,9 @@ async function getSites(req, res) {
         'created_at ' +
         'photo name ' +
         'title ' +
-        'description '
+        'description ' +
+        'load_date ' +
+        'loadParser'
     ).exec()
 
     res.success('Успешно', sites)

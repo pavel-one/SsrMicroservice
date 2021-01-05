@@ -37,10 +37,22 @@ const schema = new Schema({
     sitemap: {
         type: String
     },
-    load: {
+    load_date: {
+        type: Date
+    },
+    loadParser: {
         type: Boolean
     }
 })
+
+schema.methods.loadState = async function (state = true) {
+    this.loadParser = state
+
+    if (state === false) {
+        this.load_date = new Date()
+    }
+    await this.save()
+}
 
 //TODO: Вынести на событие, или сделать нормальную систему событий
 schema.methods.removeEvent = async function () {

@@ -17,6 +17,10 @@ const schema = new Schema({
     html: {
         type: String,
         required: true,
+    },
+    error: {
+        type: Boolean,
+        required: true,
     }
 })
 

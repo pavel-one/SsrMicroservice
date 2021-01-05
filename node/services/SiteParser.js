@@ -8,22 +8,23 @@ function errorParser(err = '', url) {
 
         return this;
     }
-
+    this.opts.siteObj.loadState(false)
+    this.opts.siteObj.save()
     console.log('ERROR: ', url, err)
 }
 
 function doneParser() {
     console.log('Парсинг закончился', this.opts.siteObj._id)
     //TODO: Сделать дату последнего обновления, вынести в эвент
-    this.opts.siteObj.load = false
+    this.opts.siteObj.loadState(false)
     this.opts.siteObj.save()
 }
 
-function handleParser(doc) {
+async function handleParser(doc) {
     console.log('handle', doc.url)
     //Первая страница
     if (doc.url === doc.res.site.base_url) {
-        doc.res.site.load = true
+        await doc.res.site.loadState()
         doc.res.site.title = doc.$('title').text()
         doc.res.site.description = doc.$('meta[name="description"]').attr('content') || ''
         doc.res.site.save()

@@ -1,5 +1,5 @@
 <template>
-    <div @click="remove(site._id)" class="card site-item">
+    <div class="card site-item">
         <div class="card-image">
             <b-loading :is-full-page="false" v-model="!site.photo"></b-loading>
             <figure class="image">
@@ -22,6 +22,22 @@
                 <div class="bottom has-text-centered">
                     <hr>
                     {{site.created_at | moment("DD.MM.YYYY HH:mm:ss") }}
+                    <br>
+                    <a :href="site.base_url" target="_blank">{{site.base_url}}</a>
+                    <br>
+                    <br>
+                    <div>
+                        <b-button type="is-primary is-light" size="is-small" :disabled="site.loadParser">
+                            <b-icon style="margin-right: 5px" icon="fas fa-sync"
+                                :custom-class="site.loadParser ? 'fa-spin' : ''">
+                            </b-icon>
+                            {{site.loadParser ? 'Индексируется' : 'Индексировать'}}
+                        </b-button>
+                        <b-button type="is-danger is-light" size="is-small" @click="remove(site._id)">
+                            <b-icon style="margin-right: 5px" icon="fas fa-trash"></b-icon>
+                            Удалить
+                        </b-button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -55,7 +71,7 @@ export default {
 .site-item {
     width: 300px;
     margin: 10px;
-    cursor: pointer;
+    //cursor: pointer;
     display: flex;
     flex-direction: column;
 }
