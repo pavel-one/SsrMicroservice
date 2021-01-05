@@ -21,7 +21,7 @@
                 </div>
                 <div class="bottom has-text-centered">
                     <hr>
-                    {{site.created_at | moment("DD.MM.YYYY HH:mm:ss") }}
+                    {{ created_time }}
                     <br>
                     <a :href="site.base_url" target="_blank">{{site.base_url}}</a>
                     <br>
@@ -45,11 +45,18 @@
 </template>
 
 <script>
+import Moment from 'moment'
+
 export default {
     props: {
         site: {
             type: Object,
             required: true
+        }
+    },
+    computed: {
+        created_time() {
+            return new Moment(this.site.created_at).locale('ru').fromNow()
         }
     },
     methods: {

@@ -9,7 +9,6 @@ import App from './Components/Templates/App'
 import pagesRoutes from '../routes/pages'
 import Store from './Store/Store'
 import http from './Services/http'
-import moment from 'vue-moment'
 
 async function initApp() {
     Vue.use(VueRouter)
@@ -22,7 +21,6 @@ async function initApp() {
     Vue.use(http, {
         limit: 2000
     })
-    Vue.use(moment);
 
     const router = new VueRouter({
         routes: pagesRoutes,
