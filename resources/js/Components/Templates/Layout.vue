@@ -16,10 +16,23 @@
 <script>
 export default {
     props: ['css'],
-    mounted() {
-        if (this.$store.getters.AppError) {
+    computed: {
+        appError() {
+            return this.$store.getters.AppError
+        }
+    },
+    watch: {
+        appError: function (val, old) {
             this.$buefy.notification.open({
-                message: this.$store.getters.AppError,
+                message: val,
+                type: 'is-warning'
+            })
+        }
+    },
+    mounted() {
+        if (this.appError) {
+            this.$buefy.notification.open({
+                message: this.appError,
                 type: 'is-warning'
             })
         }

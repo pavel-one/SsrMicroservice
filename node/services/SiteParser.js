@@ -8,8 +8,8 @@ function errorParser(err = '', url) {
 
         return this;
     }
-    this.opts.siteObj.loadState(false)
-    this.opts.siteObj.save()
+    // this.opts.siteObj.loadState(false)
+    // this.opts.siteObj.save()
     console.log('ERROR: ', url, err)
 }
 

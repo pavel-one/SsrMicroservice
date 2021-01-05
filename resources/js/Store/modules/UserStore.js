@@ -11,7 +11,7 @@ export default {
     },
     mutations: {
         updateUser(state, user) {
-            console.log('UPDATE USER: ', user)
+            // console.log('UPDATE USER: ', user)
 
             state.user = user
         }

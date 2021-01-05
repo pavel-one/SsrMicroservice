@@ -7,7 +7,6 @@
 
 <script>
 import Layout from "../Components/Templates/Layout";
-import Store from "../Store/Store";
 
 export default {
     components: {Layout},
