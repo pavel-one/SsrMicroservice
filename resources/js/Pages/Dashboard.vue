@@ -58,16 +58,16 @@ export default {
     },
     methods: {
         logout: function () {
-            this.$http.post('/logout').then(response => {
-                this.$buefy.notification.open({
-                    message: response.data.msg,
-                    type: response.data.success ? 'is-success' : 'is-danger'
-                })
+            const response = this.$http.post('/logout')
 
-                if (response.data.success) {
-                    this.$router.push({name: 'auth'})
-                }
+            this.$buefy.notification.open({
+                message: response.data.msg,
+                type: response.data.success ? 'is-success' : 'is-danger'
             })
+
+            if (response.data.success) {
+                this.$router.push({name: 'auth'})
+            }
         }
     }
     ,
