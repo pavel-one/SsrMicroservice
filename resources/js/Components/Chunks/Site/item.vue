@@ -1,5 +1,5 @@
 <template>
-    <div class="card site-item">
+    <router-link :to="{name: 'site', params: {id: site._id}}" class="card site-item">
         <div class="card-image">
             <b-loading :is-full-page="false" v-model="!site.photo"></b-loading>
             <figure class="image">
@@ -23,7 +23,7 @@
                     <hr>
                     {{ created_time }}
                     <br>
-                    <a :href="site.base_url" target="_blank">{{site.base_url}}</a>
+                    <a @click.prevent="goSite" :href="site.base_url" target="_blank">{{site.base_url}}</a>
                     <br>
                     <br>
                     <div>
@@ -41,7 +41,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </router-link>
 </template>
 
 <script>
@@ -70,6 +70,9 @@ export default {
                 this.$store.dispatch('fetchSites')
             })
         },
+        goSite() {
+            window.open(this.site.base_url, '_blank')
+        }
     }
 }
 </script>
@@ -81,6 +84,10 @@ export default {
     //cursor: pointer;
     display: flex;
     flex-direction: column;
+    transition: .25s;
+    &:hover {
+        box-shadow: .25em .25em .5em -0.125em rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .02);
+    }
 }
 .card-image {
     max-height: 187px;

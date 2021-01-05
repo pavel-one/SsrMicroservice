@@ -103,6 +103,7 @@ export default {
 
     &:hover {
         box-shadow: .25em .25em .5em -0.125em rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .02);
+        cursor: pointer;
     }
 }
 </style>

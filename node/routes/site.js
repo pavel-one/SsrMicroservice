@@ -8,6 +8,10 @@ App.router.get('/dashboard', (req, res) => {
     res.sendFile(App.getPath('public/index.html'))
 })
 
+App.router.get('/dashboard/site/:id', (req, res) => {
+    res.sendFile(App.getPath('public/index.html'))
+})
+
 App.router.get('/auth', (req, res) => {
     res.sendFile(App.getPath('public/index.html'))
 })
