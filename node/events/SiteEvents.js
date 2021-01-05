@@ -1,27 +1,11 @@
 const fs = require('fs')
 const captureWebsite = require('capture-website')
 const pathClass = require('path')
-const Parser = require('../services/SiteParser')
+const Parser = require("../services/SiteParser");
 
 const createNewSiteEvent = async function (site) {
-
-    new Parser({}, site)
+    Parser(site)
     await createScreenshot(site)
-}
-
-const removeSiteEvent = async function (site) {
-    if (site.photo === 'no-photo.png') {
-        return true
-    }
-
-    const path = 'public/user_screenshots/' + site.photo;
-
-    if (fs.existsSync(path)) {
-        fs.unlinkSync(path)
-        return true
-    }
-
-    return false
 }
 
 async function createScreenshot(site) {
@@ -50,6 +34,5 @@ async function createScreenshot(site) {
 
 
 module.exports = {
-    createNewSiteEvent,
-    removeSiteEvent
+    createNewSiteEvent
 }

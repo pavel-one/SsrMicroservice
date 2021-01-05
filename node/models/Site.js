@@ -1,4 +1,5 @@
 const {Schema, model} = require('mongoose')
+const fs = require('fs')
 const url = require('url')
 
 const schema = new Schema({
@@ -40,6 +41,19 @@ const schema = new Schema({
         type: Boolean
     }
 })
+
+//TODO: Вынести на событие, или сделать нормальную систему событий
+schema.methods.removeEvent = async function () {
+    if (this.photo !== 'no-photo.png') {
+        const path = 'public/user_screenshots/' + this.photo;
+
+        if (fs.existsSync(path)) {
+            fs.unlinkSync(path)
+        }
+    }
+
+    return this.remove()
+}
 
 schema.methods.getDomain = function () {
     return url.parse(this.url).hostname

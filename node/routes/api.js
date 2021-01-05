@@ -3,7 +3,7 @@ const User = require('../models/User')
 const Site = require('../models/Site')
 const Bcrypt = require('bcrypt')
 const url = require('url')
-const {createNewSiteEvent, removeSiteEvent} = require('../events/SiteEvents')
+const {createNewSiteEvent} = require('../events/SiteEvents')
 
 app.router.post('/auth', auth)
 app.router.post('/register', register)
@@ -30,8 +30,7 @@ async function removeSite(req, res) {
         return res.fail('Не найден такой объект')
     }
 
-    await removeSiteEvent(siteObj)
-    await siteObj.remove()
+    await siteObj.removeEvent() //TODO: Сделать нормальное событие
 
     return res.success('Успешно')
 }
