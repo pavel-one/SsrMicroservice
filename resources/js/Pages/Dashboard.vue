@@ -57,8 +57,8 @@ export default {
         }
     },
     methods: {
-        logout: function () {
-            const response = this.$http.post('/logout')
+        logout: async function () {
+            const response = await this.$http.post('/logout')
 
             this.$buefy.notification.open({
                 message: response.data.msg,
@@ -66,7 +66,7 @@ export default {
             })
 
             if (response.data.success) {
-                this.$router.push({name: 'auth'})
+                await this.$router.push({name: 'auth'})
             }
         }
     }
