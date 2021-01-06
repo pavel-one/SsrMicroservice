@@ -45,7 +45,8 @@ export default {
     },
     data() {
         return {
-            modal_active: false
+            modal_active: false,
+            interval_id: undefined
         }
     },
     computed: {
@@ -72,9 +73,12 @@ export default {
     }
     ,
     mounted() {
-        setInterval(() => {
+        this.interval_id = setInterval(() => {
             this.$store.dispatch('fetchSites')
         }, 1000)
+    },
+    destroyed() {
+        clearInterval(this.interval_id)
     }
 }
 </script>
