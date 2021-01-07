@@ -26,7 +26,6 @@
                 <add-site-form @close="modal_active = false"></add-site-form>
             </template>
         </b-modal>
-        <a href="#" @click.prevent="logout">Выйти</a>
     </Layout>
 </template>
 
@@ -57,25 +56,10 @@ export default {
             return this.$store.getters.getSites
         }
     },
-    methods: {
-        logout: async function () {
-            const response = await this.$http.post('/logout')
-
-            this.$buefy.notification.open({
-                message: response.data.msg,
-                type: response.data.success ? 'is-success' : 'is-danger'
-            })
-
-            if (response.data.success) {
-                await this.$router.push({name: 'auth'})
-            }
-        }
-    }
-    ,
     mounted() {
         this.interval_id = setInterval(() => {
             this.$store.dispatch('fetchSites')
-        }, 1000)
+        }, 2000)
     },
     destroyed() {
         clearInterval(this.interval_id)

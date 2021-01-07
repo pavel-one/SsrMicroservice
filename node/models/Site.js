@@ -1,6 +1,7 @@
 const {Schema, model} = require('mongoose')
 const fs = require('fs')
 const url = require('url')
+const SitePageModel = require('./SitePage')
 
 const schema = new Schema({
     name: {
@@ -54,13 +55,32 @@ schema.methods.loadState = async function (state = true) {
 
 //TODO: Вынести на событие, или сделать нормальную систему событий
 schema.methods.removeEvent = async function () {
+    //Удаляем скриншот сайта
     if (this.photo !== 'no-photo.png') {
-        const path = 'public/user_screenshots/' + this.photo;
+        const path = process.env.DIR_SITE_SCREEN + this.photo;
 
         if (fs.existsSync(path)) {
             fs.unlinkSync(path)
         }
     }
+
+    //Удаляем скриншоты страниц, если они были
+    const dir = process.env.DIR_SITE_PAGE_SCREEN
+    const SitePageScreens = fs.readdirSync(dir)
+
+    if (SitePageScreens.length) {
+        SitePageScreens.forEach(name => {
+            let nameDomain = name.split('-')[0]
+            if (nameDomain && nameDomain === this.getDomain()) {
+                fs.unlinkSync(dir + name)
+            }
+        })
+    }
+
+    //Удаляем зависимости
+    await SitePageModel.deleteMany({
+        site_id: this._id
+    })
 
     return this.remove()
 }
@@ -71,19 +91,6 @@ schema.methods.getDomain = function () {
 
 schema.methods.getUrlSchema = function () {
     return url.parse(this.url).protocol
-}
-
-schema.methods.addLinks = async function (links) {
-    if (!this.sitemap) {
-        this.sitemap = JSON.stringify([{links}])
-        return this.save()
-    }
-
-    const linksObj = JSON.parse(this.sitemap)
-    linksObj.push([{links}])
-
-    this.sitemap = JSON.stringify(linksObj)
-    return this.save()
 }
 
 module.exports = model('Site', schema)

@@ -1,36 +1,89 @@
 const SpiderClass = require('./spider')
+const SitePageModel = require('../models/SitePage')
 
 let Spider;
 
-function errorParser(err = '', url) {
+async function errorParser(err = '', url) {
     if (url === this.siteObj.base_url) {
-        this.siteObj.removeEvent() //TODO: Выбивает варнинг, не смог разобраться почему
+        try {
+            await this.siteObj.removeEvent()
+        } catch (e) {
+            //TODO: Сделать обработку
+        }
 
         return this;
     }
-    // this.opts.siteObj.loadState(false)
-    // this.opts.siteObj.save()
+
+    let sitePage = await SitePageModel.findOne({
+        url: url
+    })
+
+    if (sitePage) {
+        sitePage.error = true
+        sitePage.errorMessage = err
+        sitePage.lastDate = new Date()
+    } else {
+        sitePage = await new SitePageModel({
+            url: url,
+            errorMessage: err,
+            error: true,
+            title: 'Не определено',
+
+            site_id: this.siteObj._id,
+            html: 'Не определено',
+            lastDate: new Date()
+        })
+    }
+
+    await sitePage.save()
+
+
     console.log('ERROR: ', url, err)
 }
 
 function doneParser() {
     console.log('Парсинг закончился', this.opts.siteObj._id)
-    //TODO: Сделать дату последнего обновления, вынести в эвент
+    //TODO: Вынести в эвент
     this.opts.siteObj.loadState(false)
     this.opts.siteObj.save()
 }
 
 async function handleParser(doc) {
-    console.log('handle', doc.url)
+    let siteModel = await SitePageModel.findOne({
+        url: doc.url
+    })
+
+    if (siteModel) {
+        siteModel.title = doc.$('title').text()
+        siteModel.html = doc.res.body
+        siteModel.error = false
+        siteModel.screen = doc.res.screen
+        siteModel.lastDate = new Date()
+        await siteModel.save()
+    } else {
+        await new SitePageModel({
+            title: doc.$('title').text() || 'Не определено',
+            url: doc.url,
+            site_id: doc.res.site._id,
+            html: doc.res.body,
+            error: false,
+            screen: doc.res.screen,
+            lastDate: new Date()
+        }).save()
+    }
+
+
     //Первая страница
     if (doc.url === doc.res.site.base_url) {
         await doc.res.site.loadState()
         doc.res.site.title = doc.$('title').text()
         doc.res.site.description = doc.$('meta[name="description"]').attr('content') || ''
-        doc.res.site.save()
+
+        await doc.res.site.save()
     } else {
         doc.res.site.load_date = new Date()
-        doc.res.site.save()
+
+        await doc.res.site.save()
     }
 
     doc.$('a').each((i, elem) => {

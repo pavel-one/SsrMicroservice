@@ -10,7 +10,7 @@ const createNewSiteEvent = async function (site) {
 
 async function createScreenshot(site) {
     const name = site.getDomain() + '.png'
-    const path = 'public/user_screenshots/' + name;
+    const path = process.env.DIR_SITE_SCREEN + name;
     if (fs.existsSync(path)) {
         fs.unlinkSync(path)
     }

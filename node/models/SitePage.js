@@ -22,6 +22,16 @@ const schema = new Schema({
     error: {
         type: Boolean,
         required: true,
+    },
+    errorMessage: {
+        type: String
+    },
+    lastDate: {
+        type: Date,
+        required: true
+    },
+    screen: {
+        type: String
     }
 })
 

@@ -18,9 +18,8 @@ app.router.get('/sites', getSites)
 
 async function removeSite(req, res) {
     const id = req.params.id
-    const user_id = req.user.id
 
-    if (!user_id) {
+    if (!req.user) {
         return res.fail('Вы не авторизованы')
     }
 
@@ -30,11 +29,15 @@ async function removeSite(req, res) {
 
     const siteObj = await Site.findOne({
         _id: id,
-        user_id: user_id
+        user_id: req.user.id
     })
 
     if (!siteObj) {
         return res.fail('Не найден такой объект')
+    }
+
+    if (siteObj.loadParser) {
+        return res.fail('Сайт в процессе обработки, удаление невозможно')
     }
 
     await siteObj.removeEvent() //TODO: Сделать нормальное событие

@@ -1,7 +1,10 @@
 const Spider = require('node-spider');
 const puppeteer = require('puppeteer')
+const path = require('path')
+const Url = require('url')
 
 Spider.prototype._request = async function (opts, done) {
+    let nameScreen = ''
     const browser = await puppeteer.launch({
         headless: true,
         args: [
@@ -11,14 +14,31 @@ Spider.prototype._request = async function (opts, done) {
     })
 
     const page = await browser.newPage()
-    const response = await page.goto(opts.url)
-        .catch(error => {
-            done(error.message, {
-                body: '',
-                url: opts.url,
-                site: opts.siteObj
-            })
+
+    let response
+    try {
+        response = await page.goto(opts.url)
+        await page.setViewport({
+            width: +process.env.SITE_PAGE_WIDTH || 1366,
+            height: +process.env.SITE_PAGE_HEIGHT || 768
         })
+
+        const url = new Url.parse(opts.url)
+
+        nameScreen = `${url.hostname}-${url.pathname}.jpg`.replace(/\//g, '_')
+
+        await page.screenshot({
+            path: path.resolve(process.env.DIR_SITE_PAGE_SCREEN + nameScreen),
+            type: "jpeg",
+            fullPage: false
+        });
+    } catch (e) {
+        done(e.message, {
+            body: '',
+            url: opts.url,
+            site: opts.siteObj
+        })
+    }
 
     if (!response) {
         return
@@ -35,12 +55,14 @@ Spider.prototype._request = async function (opts, done) {
 
     const body = await page.content()
 
+    await page.close()
     await browser.close()
 
     done(false, {
         body: body,
         url: opts.url,
-        site: opts.siteObj
+        site: opts.siteObj,
+        screen: nameScreen
     })
 }
 
