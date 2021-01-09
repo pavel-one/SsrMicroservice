@@ -2,6 +2,7 @@
 const app = require('../app.class')
 const User = require('../models/User')
 const Site = require('../models/Site')
+const SitePageModel = require('../models/SitePage')
 const Bcrypt = require('bcrypt')
 const url = require('url')
 const {createNewSiteEvent} = require('../events/SiteEvents')
@@ -11,6 +12,7 @@ app.router.post('/register', register)
 app.router.get('/user', user)
 
 app.router.get('/site/:id', getSite)
+app.router.get('/site/:id/pages', getSitePages)
 
 app.router.put('/sites', addSite)
 app.router.delete('/sites/:id', removeSite)
@@ -86,6 +88,70 @@ async function getSite(req, res) {
     }
 
     return res.success('Успешно', site)
+}
+
+async function getSitePages(req, res) {
+    if (!req.user) {
+        return res.fail('Вы не авторизованы')
+    }
+
+    const site = await Site.findOne({
+        _id: req.params.id,
+        user_id: req.user.id
+    }).catch(err => {
+        //TODO: Логировать ошибку
+    })
+
+    if (!site) {
+        return res.fail('Такого сайта не существует')
+    }
+
+    const limit = +req.query.limit || 20
+    const page = +req.query.page || 1
+    const error = req.query.error ? Boolean(+req.query.error) : false
+    const sortField = req.query.sortField || 'lastDate'
+    const sortDir = req.query.sortDir || 'desc'
+    let sort = {}
+    sort[sortField] = sortDir
+
+    if (typeof (limit) !== 'number' || typeof (page) !== 'number') {
+        return res.fail('Ошибка')
+    }
+
+    if (!limit || limit > 100) {
+        return res.fail('Не передан лимит, или он больше 100')
+    }
+
+    if (!page) {
+        return res.fail('Не передана страница')
+    }
+
+    let offset = limit * (page - 1)
+    const filter = {
+        site_id: site._id,
+        error: error
+    }
+
+    const Pages = await SitePageModel.aggregate()
+        .match(filter)
+        .sort(sort)
+        // .select('title url error screen lastDate errorMessage')
+        .skip(offset)
+        .limit(limit)
+
+        .allowDiskUse(true)
+
+        .exec()
+
+    return res.success('Успешно', {
+        paginate: {
+            total: await SitePageModel.countDocuments(filter).exec(),
+            page: page,
+            limit: limit,
+            offset: offset,
+        },
+        pages: Pages
+    })
 }
 
 async function addSite(req, res) {
