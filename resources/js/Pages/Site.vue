@@ -22,12 +22,12 @@
             <div class="column">
                 <h1 class="title">Успешные страницы</h1>
                 <h2 class="subtitle">Страницы которые были успешно спарсены</h2>
-                <page-list-item></page-list-item>
+                <page-list-item @updateAll="updateAll" ref="successPageList"></page-list-item>
             </div>
             <div class="column">
                 <h1 class="title">Ошибки</h1>
                 <h2 class="subtitle">Страницы которые при парсинге выпали в ошибку</h2>
-                <page-list-item :error="true"></page-list-item>
+                <page-list-item @updateAll="updateAll" :error="true" ref="errorPageList"></page-list-item>
             </div>
         </div>
     </Layout>
@@ -48,6 +48,13 @@ export default {
         site() {
             return this.$store.getters.getSite
         },
+    },
+    methods: {
+        updateAll: function () {
+            for (let keyComponent in this.$refs) {
+                this.$refs[keyComponent].fetch()
+            }
+        }
     }
 }
 </script>

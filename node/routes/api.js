@@ -14,6 +14,8 @@ app.router.get('/user', user)
 app.router.get('/site/:id', getSite)
 app.router.get('/site/:id/pages', getSitePages)
 
+app.router.post('/site/:id/page/:page_id', updateSitePage)
+
 app.router.put('/sites', addSite)
 app.router.delete('/sites/:id', removeSite)
 app.router.get('/sites', getSites)
@@ -152,6 +154,40 @@ async function getSitePages(req, res) {
         },
         pages: Pages
     })
+}
+
+async function updateSitePage(req, res) {
+    if (!req.user) {
+        return res.fail('Вы не авторизованы')
+    }
+
+    let site = undefined
+
+    try {
+        site = await Site.findOne({
+            _id: req.params.id,
+            user_id: req.user.id
+        })
+    } catch (e) {
+        //TODO: Логировать
+    }
+
+    if (!site) {
+        return res.fail('Такого сайта не существует')
+    }
+
+    let page = undefined
+
+    try {
+        page = await SitePageModel.findOne({
+            _id: req.params.page_id,
+            site_id: site._id
+        })
+    } catch (e) {
+        //TODO: Логировать
+    }
+
+    return res.success('Успешно', await page.updatePage())
 }
 
 async function addSite(req, res) {

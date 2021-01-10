@@ -31,20 +31,28 @@ Spider.prototype._request = async function (opts, done) {
             path: path.resolve(process.env.DIR_SITE_PAGE_SCREEN + nameScreen),
             type: "jpeg",
             fullPage: false
-        });
+        })
     } catch (e) {
+        await page.close()
+        await browser.close()
+
         done(e.message, {
             body: '',
             url: opts.url,
             site: opts.siteObj
         })
+
+        return false
     }
 
     if (!response) {
-        return
+        return false
     }
 
     if (response.status().toString()[0] !== '2') {
+        await page.close()
+        await browser.close()
+
         done('Код страницы не 2хх: ' + response.status(), {
             body: '',
             url: opts.url,

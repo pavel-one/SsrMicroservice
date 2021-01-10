@@ -19,9 +19,7 @@ async function errorParser(err = '', url) {
     })
 
     if (sitePage) {
-        sitePage.error = true
-        sitePage.errorMessage = err
-        sitePage.lastDate = new Date()
+        await sitePage.fillPage(undefined, true, err)
     } else {
         sitePage = await new SitePageModel({
             url: url,
@@ -33,10 +31,8 @@ async function errorParser(err = '', url) {
             html: 'Не определено',
             lastDate: new Date()
         })
+        await sitePage.save()
     }
-
-    await sitePage.save()
-
 
     console.log('ERROR: ', url, err)
 }
@@ -54,14 +50,9 @@ async function handleParser(doc) {
     })
 
     if (siteModel) {
-        siteModel.title = doc.$('title').text()
-        siteModel.html = doc.res.body
-        siteModel.error = false
-        siteModel.screen = doc.res.screen
-        siteModel.lastDate = new Date()
-        await siteModel.save()
+        await siteModel.fillPage(doc, false)
     } else {
-        await new SitePageModel({
+        siteModel = await new SitePageModel({
             title: doc.$('title').text() || 'Не определено',
             url: doc.url,
             site_id: doc.res.site._id,

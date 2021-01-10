@@ -33,10 +33,19 @@
             <b-table-column v-slot="props">
                 <div class="buttons" style="flex-wrap: nowrap">
                     <b-tooltip label="Запустить обновление страницы" size="is-small">
-                        <b-button size="is-small is-primary is-light" icon-left="sync"></b-button>
+                        <b-button size="is-small is-primary is-light"
+                                  :loading="props.row.load"
+                                  @click.prevent="updatePage(props.row._id)"
+                                  icon-left="sync">
+
+                        </b-button>
                     </b-tooltip>
                     <b-tooltip label="Удалить страницу" size="is-small">
-                        <b-button size="is-small is-danger is-light" icon-left="trash"></b-button>
+                        <b-button size="is-small is-danger is-light"
+                                  :loading="props.row.load"
+                                  icon-left="trash">
+
+                        </b-button>
                     </b-tooltip>
                 </div>
             </b-table-column>
@@ -79,6 +88,13 @@ export default {
                 }
             })
 
+            let pages = [];
+
+            response.data.data.pages.forEach(item => {
+                item.load = false
+                pages.push(item)
+            })
+
             this.pagesSite = response.data.data.pages
             this.total = response.data.data.paginate.total
             this.load = false
@@ -99,6 +115,25 @@ export default {
         },
         dateFormat: function (date) {
             return new Moment(date).locale('ru').fromNow()
+        },
+        updatePage: async function (id) {
+            let key
+
+            this.pagesSite.forEach((item, i) => {
+                if (item._id === id) {
+                    key = i
+                    this.pagesSite[key].load = true
+                }
+            })
+
+            const response = await this.$http.post('/api/site/' + this.$route.params.id + '/page/' + id)
+            this.pagesSite[key].load = false
+
+            this.$buefy.notification.open({
+                message: response.data.msg,
+                type: response.data.success ? 'is-success' : 'is-danger'
+            })
+            this.$emit('updateAll')
         }
     },
     watch: {
